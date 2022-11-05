@@ -20,7 +20,7 @@ class Utils:
         return ratio
 
     @staticmethod
-    def get_gaze_ratio(frame, eye_points, facial_landmarks):
+    def get_gaze_ratio_hor(frame, eye_points, facial_landmarks):
         left_eye_region = np.array([(facial_landmarks.part(eye_points[0]).x, facial_landmarks.part(eye_points[0]).y),
                                     (facial_landmarks.part(eye_points[1]).x, facial_landmarks.part(eye_points[1]).y),
                                     (facial_landmarks.part(eye_points[2]).x, facial_landmarks.part(eye_points[2]).y),
@@ -55,6 +55,44 @@ class Utils:
             gaze_ratio = 5
         else:
             gaze_ratio = left_side_white / right_side_white
+        return gaze_ratio
+
+    @staticmethod
+    def get_gaze_ratio_ver(frame, eye_points, facial_landmarks):
+        left_eye_region = np.array([(facial_landmarks.part(eye_points[0]).x, facial_landmarks.part(eye_points[0]).y),
+                                    (facial_landmarks.part(eye_points[1]).x, facial_landmarks.part(eye_points[1]).y),
+                                    (facial_landmarks.part(eye_points[2]).x, facial_landmarks.part(eye_points[2]).y),
+                                    (facial_landmarks.part(eye_points[3]).x, facial_landmarks.part(eye_points[3]).y),
+                                    (facial_landmarks.part(eye_points[4]).x, facial_landmarks.part(eye_points[4]).y),
+                                    (facial_landmarks.part(eye_points[5]).x, facial_landmarks.part(eye_points[5]).y)], np.int32)
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        height, width, _ = frame.shape
+        mask = np.zeros((height, width), np.uint8)
+        cv2.polylines(mask, [left_eye_region], True, 255, 2)
+        cv2.fillPoly(mask, [left_eye_region], 255)
+        eye = cv2.bitwise_and(gray, gray, mask=mask)
+
+        min_x = np.min(left_eye_region[:, 0])
+        max_x = np.max(left_eye_region[:, 0])
+        min_y = np.min(left_eye_region[:, 1])
+        max_y = np.max(left_eye_region[:, 1])
+
+        gray_eye = eye[min_y: max_y, min_x: max_x]
+        _, threshold_eye = cv2.threshold(gray_eye, 70, 255, cv2.THRESH_BINARY)
+        height, width = threshold_eye.shape
+        top_side_threshold = threshold_eye[0: int(height / 2), 0: width]
+        top_side_white = cv2.countNonZero(top_side_threshold)
+
+        bottom_side_threshold = threshold_eye[int(height / 2): height, 0: width]
+        bottom_side_white = cv2.countNonZero(bottom_side_threshold)
+
+        if top_side_white == 0:
+            gaze_ratio = 1
+        elif bottom_side_white == 0:
+            gaze_ratio = 5
+        else:
+            gaze_ratio = top_side_white / bottom_side_white
         return gaze_ratio
 
 
