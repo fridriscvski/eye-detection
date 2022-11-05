@@ -5,7 +5,6 @@ from math import hypot
 
 
 
-
 def pupil_detection():
 
     cap = cv2.VideoCapture("eye_recording.flv")
