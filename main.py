@@ -60,6 +60,10 @@ font = cv2.FONT_HERSHEY_COMPLEX
 
 def eye_long_detect():
 
+
+
+    
+
     # inicia captura de video
     cap = cv2.VideoCapture(0)
 
