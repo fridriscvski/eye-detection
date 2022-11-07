@@ -95,7 +95,6 @@ class Utils:
             gaze_ratio = top_side_white / bottom_side_white
         return gaze_ratio
 
-
     @staticmethod
     def midpoint(p1 ,p2):
         return int((p1.x + p2.x)/2), int((p1.y + p2.y)/2)
