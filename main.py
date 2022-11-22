@@ -3,6 +3,7 @@ import dlib
 import numpy as np
 from source.utils import Utils
 from source.presenter import Presenter
+from math import hypot
 
 def main():
     # setup
@@ -14,50 +15,48 @@ def main():
     # super loop
     while True:
         _, frame = cap.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
+         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    
         faces = detector(gray)
         for face in faces:
             landmarks = predictor(gray, face)
 
-            (altura,largura)  = gray.shape
+            # Create a frame around the interested eye - left
+            roi = Utils.get_right_frame(frame, landmarks)
+            altura, largura, _ = roi.shape
+            Utils.draw_frames(roi, int(altura), int(largura))
 
-            Utils.draw_frames(frame,int(altura),int(largura))
-          
-                        
+            # TODO: - Apagar posteriormente. Não há necessidade de redimensionar esse frame
+            rows, cols, _ = roi.shape
+            gray_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+
+            # TODO: - Apagar posteriormente. Não há necessidade de desenhar essas linhas. Elas são apenas de teste
+            # cv2.line(roi,(0,int(rows/2)),(cols,int(rows/2)),(255,0,0),1)
+            # cv2.line(roi,(int(cols/2), 0),(int(cols/2), rows),(255,0,0),1)
+
+            # Cria threshold para consideração apenas das partes mais escuras
+            _, threshold = cv2.threshold(gray_roi, 35, 255, cv2.THRESH_BINARY_INV)
+            contours, _ = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contours = sorted(contours, key=lambda x: cv2.contourArea(x), reverse = True)
+
+            for cnt in contours:
+                (x, y, w, h) = cv2.boundingRect(cnt)
+                cv2.line(roi,(x+int(w/2),0),(x+int(w/2), rows),(0,255,0),1)
+                cv2.line(roi, (0,y+int(h/2)), (cols, y+int(h/2)),(0,255,0),1)
+                break
 
             # Get blinking
             left_eye_ratio = Utils.get_blinking_ratio(frame, [36, 37, 38, 39, 40, 41], landmarks)
-            right_eye_ratio = Utils.get_blinking_ratio(frame, [42, 43, 44, 45, 46, 47], landmarks)
-            blinking_ratio = (left_eye_ratio + right_eye_ratio) / 2
+            blinking_ratio = left_eye_ratio
 
             if blinking_ratio > 5.7 and blinking_ratio < 8:
                 presenter.presentText("Blinking - " + str(blinking_ratio), frame)
 
             else:
-                # Get direction
-                gaze_ratio_left_eye = Utils.get_gaze_ratio_hor(frame, [36, 37, 38, 39, 40, 41], landmarks)
-                gaze_ratio_right_eye = Utils.get_gaze_ratio_hor(frame, [42, 43, 44, 45, 46, 47], landmarks)
-                gaze_ratio = (gaze_ratio_right_eye + gaze_ratio_left_eye) / 2
+                presenter.presentText("Not blinking - " + str(blinking_ratio), frame)
+                
 
-                if gaze_ratio <= 0.5:
-                    presenter.presentText("Right - " + str(gaze_ratio), frame)
-
-                elif gaze_ratio > 1.8:
-                    presenter.presentText("Left - " + str(gaze_ratio), frame)
-
-                else:
-                    gaze_ratio_top_eye = Utils.get_gaze_ratio_ver(frame, [36, 37, 38, 39, 40, 41], landmarks)
-                    gaze_ratio_bottom_eye = Utils.get_gaze_ratio_ver(frame, [42, 43, 44, 45, 46, 47], landmarks)
-                    gaze_ratio = (gaze_ratio_top_eye + gaze_ratio_bottom_eye) / 2
-
-                    if gaze_ratio <= 0.2:
-                        presenter.presentText("top - " + str(gaze_ratio), frame)
-
-                    elif gaze_ratio > 3:
-                        presenter.presentText("bottom - " + str(gaze_ratio), frame)
-
-        presenter.presentFrame(frame, "Frame")
+        presenter.presentFrame(roi, "Frame")
 
         key = cv2.waitKey(1)
         if key == 27:
@@ -68,3 +67,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

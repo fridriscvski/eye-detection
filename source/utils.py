@@ -28,7 +28,7 @@ class Utils:
     
     @staticmethod
     def draw_rectangle(frame, x_start, y_start, x_end, y_end):
-        cv2.rectangle(frame, (x_start, y_start), (x_end, y_end),(255,0,0),2)
+        cv2.rectangle(frame, (x_start, y_start), (x_end, y_end), (255,0,0), 2)
 
     @staticmethod
     def get_gaze_ratio_hor(frame, eye_points, facial_landmarks):
@@ -106,6 +106,19 @@ class Utils:
             gaze_ratio = top_side_white / bottom_side_white
         return gaze_ratio
 
+    @staticmethod
+    def get_right_frame(frame, facial_landmarks):    
+        right_eye_cord = {
+            'x_max': facial_landmarks.part(36).x - 15,
+            'x_min': facial_landmarks.part(39).x + 15,
+            'y_max': facial_landmarks.part(38).y - 10,
+            'y_min': facial_landmarks.part(41).y + 10
+        }
+
+        # Create a frame around the interested eye - left
+        eye_frame = frame[right_eye_cord['y_max']: right_eye_cord['y_min'], right_eye_cord['x_max']: right_eye_cord['x_min']] 
+        return cv2.flip(eye_frame, 1)
+        
     @staticmethod
     def midpoint(p1 ,p2):
         return int((p1.x + p2.x)/2), int((p1.y + p2.y)/2)
