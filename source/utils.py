@@ -18,6 +18,17 @@ class Utils:
 
         ratio = hor_line_lenght / ver_line_lenght
         return ratio
+    
+    @staticmethod
+    def draw_frames(frame, altura, largura):
+            Utils.draw_rectangle(frame, 0, 0, int((largura/3)), int(altura))
+            Utils.draw_rectangle(frame, int(2*largura/3), 0, int(largura), int(altura))
+            Utils.draw_rectangle(frame, int(largura/3), 0, int(2*largura/3), int(altura/3))
+            Utils.draw_rectangle(frame, int(largura/3),int(2*altura/4),int(2*largura/3),int(altura))
+    
+    @staticmethod
+    def draw_rectangle(frame, x_start, y_start, x_end, y_end):
+        cv2.rectangle(frame, (x_start, y_start), (x_end, y_end),(255,0,0),2)
 
     @staticmethod
     def get_gaze_ratio_hor(frame, eye_points, facial_landmarks):

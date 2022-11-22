@@ -20,6 +20,12 @@ def main():
         for face in faces:
             landmarks = predictor(gray, face)
 
+            (altura,largura)  = gray.shape
+
+            Utils.draw_frames(frame,int(altura),int(largura))
+          
+                        
+
             # Get blinking
             left_eye_ratio = Utils.get_blinking_ratio(frame, [36, 37, 38, 39, 40, 41], landmarks)
             right_eye_ratio = Utils.get_blinking_ratio(frame, [42, 43, 44, 45, 46, 47], landmarks)
