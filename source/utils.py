@@ -3,13 +3,14 @@ import cv2
 import numpy as np
 
 class Utils:
-    @staticmethod
-    def get_blinking_ratio(frame, eye_points, facial_landmarks):
+    eye_frame_cutted = False
+    right_eye_cord = None
+
+    def get_blinking_ratio(self, frame, eye_points, facial_landmarks):
         left_point = (facial_landmarks.part(eye_points[0]).x, facial_landmarks.part(eye_points[0]).y)
         right_point = (facial_landmarks.part(eye_points[3]).x, facial_landmarks.part(eye_points[3]).y)
-        center_top = Utils.midpoint(facial_landmarks.part(eye_points[1]), facial_landmarks.part(eye_points[2]))
-        center_bottom = Utils.midpoint(facial_landmarks.part(eye_points[5]), facial_landmarks.part(eye_points[4]))
-
+        center_top = self.__midpoint(facial_landmarks.part(eye_points[1]), facial_landmarks.part(eye_points[2]))
+        center_bottom = self.__midpoint(facial_landmarks.part(eye_points[5]), facial_landmarks.part(eye_points[4]))
         cv2.line(frame, left_point, right_point, (0, 255, 0), 2)
         cv2.line(frame, center_top, center_bottom, (0, 255, 0), 2)
 
@@ -18,20 +19,17 @@ class Utils:
 
         ratio = hor_line_lenght / ver_line_lenght
         return ratio
-    
-    @staticmethod
-    def draw_frames(frame, altura, largura):
+
+    def draw_frames(self, frame, altura, largura):
             Utils.draw_rectangle(frame, 0, 0, int((largura/3)), int(altura))
             Utils.draw_rectangle(frame, int(2*largura/3), 0, int(largura), int(altura))
             Utils.draw_rectangle(frame, int(largura/3), 0, int(2*largura/3), int(altura/3))
             Utils.draw_rectangle(frame, int(largura/3),int(2*altura/4),int(2*largura/3),int(altura))
-    
-    @staticmethod
-    def draw_rectangle(frame, x_start, y_start, x_end, y_end):
+
+    def draw_rectangle(self, frame, x_start, y_start, x_end, y_end):
         cv2.rectangle(frame, (x_start, y_start), (x_end, y_end), (255,0,0), 2)
 
-    @staticmethod
-    def get_gaze_ratio_hor(frame, eye_points, facial_landmarks):
+    def get_gaze_ratio_hor(self, frame, eye_points, facial_landmarks):
         left_eye_region = np.array([(facial_landmarks.part(eye_points[0]).x, facial_landmarks.part(eye_points[0]).y),
                                     (facial_landmarks.part(eye_points[1]).x, facial_landmarks.part(eye_points[1]).y),
                                     (facial_landmarks.part(eye_points[2]).x, facial_landmarks.part(eye_points[2]).y),
@@ -68,8 +66,7 @@ class Utils:
             gaze_ratio = left_side_white / right_side_white
         return gaze_ratio
 
-    @staticmethod
-    def get_gaze_ratio_ver(frame, eye_points, facial_landmarks):
+    def get_gaze_ratio_ver(self, frame, eye_points, facial_landmarks):
         left_eye_region = np.array([(facial_landmarks.part(eye_points[0]).x, facial_landmarks.part(eye_points[0]).y),
                                     (facial_landmarks.part(eye_points[1]).x, facial_landmarks.part(eye_points[1]).y),
                                     (facial_landmarks.part(eye_points[2]).x, facial_landmarks.part(eye_points[2]).y),
@@ -106,19 +103,19 @@ class Utils:
             gaze_ratio = top_side_white / bottom_side_white
         return gaze_ratio
 
-    @staticmethod
-    def get_right_frame(frame, facial_landmarks):    
-        right_eye_cord = {
-            'x_max': facial_landmarks.part(36).x - 15,
-            'x_min': facial_landmarks.part(39).x + 15,
-            'y_max': facial_landmarks.part(38).y - 10,
-            'y_min': facial_landmarks.part(41).y + 10
-        }
+    def get_right_frame(self, frame, facial_landmarks):    
+        if not self.eye_frame_cutted:
+            self.eye_frame_cutted = True
+            self.right_eye_cord = {
+                'x_max': facial_landmarks.part(36).x - 15,
+                'x_min': facial_landmarks.part(39).x + 15,
+                'y_max': facial_landmarks.part(38).y - 10,
+                'y_min': facial_landmarks.part(41).y + 10
+            }
 
         # Create a frame around the interested eye - left
-        eye_frame = frame[right_eye_cord['y_max']: right_eye_cord['y_min'], right_eye_cord['x_max']: right_eye_cord['x_min']] 
+        eye_frame = frame[self.right_eye_cord['y_max']: self.right_eye_cord['y_min'], self.right_eye_cord['x_max']: self.right_eye_cord['x_min']] 
         return cv2.flip(eye_frame, 1)
-        
-    @staticmethod
-    def midpoint(p1 ,p2):
+
+    def __midpoint(self, p1 ,p2):
         return int((p1.x + p2.x)/2), int((p1.y + p2.y)/2)
