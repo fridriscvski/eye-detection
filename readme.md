@@ -12,5 +12,6 @@ Este projeto combina conhecimentos de engenharia eletrônica e visão computacio
 
 ![image](https://github.com/fridriscvski/eye-detection/assets/117530891/22bc35d1-d3e1-40e3-8e94-0c7a12d11617)
 
-https://github.com/fridriscvski/eye-detection/assets/117530891/1dc47cae-b289-4f2e-ac37-2996c04709c2
+
+https://github.com/fridriscvski/eye-detection/assets/117530891/8f4c215f-2e4a-456f-aa4f-874faf658855
 
