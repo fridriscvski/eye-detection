@@ -9,3 +9,8 @@ O EyeSpeak é um software desenvolvido para localizar a direção para onde a pu
 
 
 Este projeto combina conhecimentos de engenharia eletrônica e visão computacional, demonstrando como a tecnologia pode ser aplicada para proporcionar uma interação mais acessível e inovadora com o computador.
+
+![image](https://github.com/fridriscvski/eye-detection/assets/117530891/22bc35d1-d3e1-40e3-8e94-0c7a12d11617)
+
+https://github.com/fridriscvski/eye-detection/assets/117530891/1dc47cae-b289-4f2e-ac37-2996c04709c2
+
