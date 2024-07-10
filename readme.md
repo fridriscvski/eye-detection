@@ -5,8 +5,8 @@ EyeSpeak is software developed to locate the direction where the eye's pupil is 
 
 **Key Features:**
 
-- Precise detection of pupil position using computer vision techniques.
-- Integration with the operating system to send control commands based on eye movement.
+- Precise detection of pupil position using computer vision techniques (OpenCV).
+- Integration with Raspberrypy 3 to send control commands based on eye movement to an aplication on a IPAD using MQTT comunication.
 
 This project combines knowledge from electronic engineering and computer vision, showcasing how technology can be applied to provide more accessible and innovative computer interaction.
 
